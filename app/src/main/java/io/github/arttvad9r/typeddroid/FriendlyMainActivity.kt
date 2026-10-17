@@ -380,39 +380,15 @@ private fun FriendlyStatusCard(connectionState: ConnectionState) {
     val title: String
     val detail: String
     val container = when (connectionState) {
-        ConnectionState.CONNECTED -> {
-            title = "Подключено"
-            detail = "Компьютер и телефон видят друг друга."
-            MaterialTheme.colorScheme.primaryContainer
-        }
-        ConnectionState.PAIRING -> {
-            title = "Подключаем…"
-            detail = "Проверяем QR-код и создаём защищённую связь."
-            MaterialTheme.colorScheme.secondaryContainer
-        }
-        ConnectionState.RECONNECTING -> {
-            title = "Восстанавливаем связь…"
-            detail = "TypedDroid переподключится автоматически."
-            MaterialTheme.colorScheme.secondaryContainer
-        }
-        ConnectionState.ERROR -> {
-            title = "Нет связи"
-            detail = "Не удалось подключиться. Попробуйте QR-код ещё раз."
-            MaterialTheme.colorScheme.errorContainer
-        }
-        ConnectionState.DISCONNECTED -> {
-            title = "Не подключено"
-            detail = "Отсканируйте QR-код, чтобы начать."
-            MaterialTheme.colorScheme.surfaceContainer
-        }
+        ConnectionState.CONNECTED -> { title = "Подключено"; detail = "Телефон доступен агенту."; MaterialTheme.colorScheme.primaryContainer }
+        ConnectionState.PAIRING -> { title = "Подключаем…"; detail = "Создаём защищённую связь."; MaterialTheme.colorScheme.secondaryContainer }
+        ConnectionState.RECONNECTING -> { title = "Восстанавливаем связь…"; detail = "Переподключение произойдёт автоматически."; MaterialTheme.colorScheme.secondaryContainer }
+        ConnectionState.ERROR -> { title = "Нет связи"; detail = "Попробуйте подключение ещё раз."; MaterialTheme.colorScheme.errorContainer }
+        ConnectionState.DISCONNECTED -> { title = "Не подключено"; detail = "Готов к подключению по QR-коду."; MaterialTheme.colorScheme.surfaceContainer }
     }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = container),
-    ) {
-        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+    Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = container)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
             Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
@@ -430,31 +406,20 @@ private fun PairingHomeCard(
 ) {
     val enabled = connectionState == ConnectionState.DISCONNECTED || connectionState == ConnectionState.ERROR
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Подключить телефон", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Подключение", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "Попросите агента на компьютере показать QR-код TypedDroid и отсканируйте его камерой.",
+                "Попросите ИИ-агента на компьютере показать QR-код TypedDroid и отсканируйте его камерой телефона.",
                 style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             StepText("1", "Покажите QR-код на компьютере")
             StepText("2", "Отсканируйте его камерой телефона")
-            StepText("3", "Откройте ссылку TypedDroid")
-
-            message?.takeIf { it.isNotBlank() }?.let {
-                Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
-            }
-
-            TextButton(onClick = onToggleManual, enabled = enabled) {
-                Text(if (showManual) "Скрыть ручное подключение" else "Не получается подключиться?")
-            }
-
+            StepText("3", "Откройте ссылку — TypedDroid подключится сам")
+            message?.takeIf { it.isNotBlank() }?.let { Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall) }
+            TextButton(onClick = onToggleManual, enabled = enabled) { Text(if (showManual) "Скрыть ручной способ" else "Подключить вручную") }
             if (showManual) {
                 HorizontalDivider()
-                Text(
-                    "Ручной способ нужен только для диагностики.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
                 OutlinedTextField(
                     value = code,
                     onValueChange = onCodeChange,
@@ -462,14 +427,9 @@ private fun PairingHomeCard(
                     enabled = enabled,
                     singleLine = true,
                     label = { Text("Код или pairing bundle") },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.None,
-                        keyboardType = KeyboardType.Ascii,
-                    ),
+                    keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, keyboardType = KeyboardType.Ascii),
                 )
-                Button(onClick = onPair, modifier = Modifier.fillMaxWidth(), enabled = enabled) {
-                    Text("Подключить вручную")
-                }
+                Button(onClick = onPair, modifier = Modifier.fillMaxWidth(), enabled = enabled) { Text("Подключить") }
             }
         }
     }
