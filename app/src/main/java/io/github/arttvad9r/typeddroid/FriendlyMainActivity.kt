@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -241,19 +240,19 @@ private fun FriendlyHomeScreen(
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(6.dp))
             Text(
                 "TypedDroid",
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                "Связь между вашим телефоном и ИИ-агентом",
-                style = MaterialTheme.typography.bodyMedium,
+                "Управление телефоном для ИИ-агента",
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -403,7 +402,7 @@ private fun FriendlyStatusCard(connectionState: ConnectionState) {
         }
         ConnectionState.DISCONNECTED -> {
             title = "Не подключено"
-            detail = "Подключение занимает меньше минуты."
+            detail = "Отсканируйте QR-код, чтобы начать."
             MaterialTheme.colorScheme.surfaceContainer
         }
     }
@@ -412,9 +411,9 @@ private fun FriendlyStatusCard(connectionState: ConnectionState) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = container),
     ) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            Text(detail, style = MaterialTheme.typography.bodyMedium)
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -431,15 +430,15 @@ private fun PairingHomeCard(
 ) {
     val enabled = connectionState == ConnectionState.DISCONNECTED || connectionState == ConnectionState.ERROR
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text("Подключите телефон", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Подключить телефон", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "На компьютере попросите Codex показать QR-код TypedDroid. Затем отсканируйте его обычной камерой телефона.",
-                style = MaterialTheme.typography.bodyLarge,
+                "Попросите агента на компьютере показать QR-код TypedDroid и отсканируйте его камерой.",
+                style = MaterialTheme.typography.bodyMedium,
             )
-            StepText("1", "Попросите Codex: «покажи QR для TypedDroid»")
-            StepText("2", "Наведите камеру телефона на QR-код")
-            StepText("3", "Откройте ссылку — остальное произойдёт автоматически")
+            StepText("1", "Покажите QR-код на компьютере")
+            StepText("2", "Отсканируйте его камерой телефона")
+            StepText("3", "Откройте ссылку TypedDroid")
 
             message?.takeIf { it.isNotBlank() }?.let {
                 Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
@@ -480,10 +479,10 @@ private fun PairingHomeCard(
 private fun StepText(number: String, text: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(number, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-        Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+        Text(number, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+        Text(text, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
     }
 }
 
@@ -505,8 +504,8 @@ private fun SetupHomeCard(
     ).count { it }
 
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            Text("Настройте доступ", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            Text("Настройте доступ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
                 "$configured из 3 основных возможностей настроено. Всё можно изменить позже.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -591,9 +590,9 @@ private fun ReadyHomeCard(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
     ) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text("Готов к работе", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-            Text("Codex может работать с телефоном через TypedDroid.")
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text("Готов к работе", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Подключённый агент может работать с телефоном через TypedDroid.")
             Spacer(Modifier.height(2.dp))
             SummaryLine("Режим агента", if (trustMode == AgentTrustMode.TRUSTED) "Полный доступ" else "Безопасный")
             SummaryLine("Системное управление", if (embeddedAdbReady) "Готово" else "Ограничено")
@@ -608,7 +607,7 @@ private fun HealthSummaryCard(
     onRefresh: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Телефон", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 TextButton(onClick = onRefresh) { Text("Обновить") }
