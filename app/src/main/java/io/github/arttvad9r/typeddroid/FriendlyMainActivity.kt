@@ -256,7 +256,9 @@ private fun FriendlyHomeScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            FriendlyStatusCard(state.connectionState)
+            if (!connected) {
+                FriendlyStatusCard(state.connectionState)
+            }
 
             state.pendingApprovals.forEach { ticket ->
                 FriendlyApprovalCard(
@@ -457,53 +459,54 @@ private fun SetupHomeCard(
     onFinish: () -> Unit,
     onOpenSystemAccess: () -> Unit,
 ) {
-    val configured = listOf(
-        trustMode == AgentTrustMode.TRUSTED,
-        embeddedAdb.ready,
-        notificationAccessGranted,
-    ).count { it }
+    val optionalConfigured = listOf(embeddedAdb.ready, notificationAccessGranted).count { it }
 
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text("Настройте доступ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text("Настройка возможностей", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                "$configured из 3 основных возможностей настроено. Всё можно изменить позже.",
+                "Подключение уже готово. Дополнительные возможности можно включить сейчас или позже.",
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             SetupRow(
-                title = "Полный доступ агента",
-                detail = if (trustMode == AgentTrustMode.TRUSTED) "Включён" else "Сейчас включён безопасный режим",
-                ready = trustMode == AgentTrustMode.TRUSTED,
-                action = if (trustMode == AgentTrustMode.TRUSTED) "Ограничить" else "Включить",
+                title = "Режим доступа",
+                detail = if (trustMode == AgentTrustMode.TRUSTED) {
+                    "Агенту доступны команды управления и shell"
+                } else {
+                    "Безопасный режим с подтверждением чувствительных действий"
+                },
+                status = if (trustMode == AgentTrustMode.TRUSTED) "Полный" else "Безопасный",
+                action = if (trustMode == AgentTrustMode.TRUSTED) "Ограничить" else "Расширить",
                 onAction = if (trustMode == AgentTrustMode.TRUSTED) onDisableTrusted else onEnableTrusted,
             )
             HorizontalDivider()
             SetupRow(
-                title = "Управление системой",
-                detail = if (embeddedAdb.ready) "Готово" else "Нужно для shell и системных команд",
-                ready = embeddedAdb.ready,
+                title = "Системные команды",
+                detail = if (embeddedAdb.ready) "Wireless Debugging настроен" else "Нужно для shell и расширенного управления Android",
+                status = if (embeddedAdb.ready) "Готово" else "Опционально",
                 action = if (embeddedAdb.ready) "Готово" else "Настроить",
                 onAction = onOpenSystemAccess,
                 actionEnabled = !embeddedAdb.ready,
             )
             HorizontalDivider()
             SetupRow(
-                title = "Уведомления телефона",
-                detail = if (notificationAccessGranted) "Доступ разрешён" else "Чтение, открытие и ответы",
-                ready = notificationAccessGranted,
+                title = "Уведомления",
+                detail = if (notificationAccessGranted) "Чтение, открытие и ответы доступны" else "Разрешите, если агенту нужны уведомления телефона",
+                status = if (notificationAccessGranted) "Разрешены" else "Опционально",
                 action = if (notificationAccessGranted) "Настройки" else "Разрешить",
                 onAction = onOpenNotificationAccess,
             )
 
-            Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) {
-                Text("Готово")
-            }
             Text(
-                "Можно завершить настройку и без дополнительных разрешений — TypedDroid будет использовать только доступные возможности.",
+                "Дополнительно настроено: $optionalConfigured из 2",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            Button(onClick = onFinish, modifier = Modifier.fillMaxWidth()) {
+                Text("Продолжить")
+            }
         }
     }
 }
@@ -512,12 +515,12 @@ private fun SetupHomeCard(
 private fun SetupRow(
     title: String,
     detail: String,
-    ready: Boolean,
+    status: String,
     action: String,
     onAction: () -> Unit,
     actionEnabled: Boolean = true,
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -531,9 +534,9 @@ private fun SetupRow(
                 )
             }
             Text(
-                if (ready) "Готово" else "Не настроено",
+                status,
                 style = MaterialTheme.typography.labelMedium,
-                color = if (ready) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.primary,
             )
         }
         TextButton(onClick = onAction, enabled = actionEnabled) { Text(action) }
@@ -592,7 +595,7 @@ private fun AccessSettingsCard(
     onOpenNotificationAccess: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text("Основной доступ", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             SummaryLine("Агент", if (trustMode == AgentTrustMode.TRUSTED) "Полный доступ" else "Безопасный режим")
             Button(
